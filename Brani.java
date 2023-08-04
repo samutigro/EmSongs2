@@ -61,36 +61,13 @@ class Brani {
      * @return
      * @throws SQLException
      */
-    public static String[][] cercaBranoMusicale(String autore, int anno, Database db) throws SQLException {
+    public static String[][] cercaBranoMusicale(String autore, int anno, Database db) throws SQLException, RemoteException {
         //query per cercare i titoli in base ad autore e anno
         String q = "select titolo, codcanz from canzoni where autore ='"+autore+"' and anno="+anno+" group by codcanz";
         Query query = new Query(q);
-        Statement stm = db.getStatement();
-        ArrayList<String> arrayList = new ArrayList<>();
-        ArrayList<String> arrayCod = new ArrayList<>();
-        ResultSet rs = stm.executeQuery(query.getQuery());
-        int tot=0;
-        //raccolta dei brani in un array e dei rispettivi codici
-
-        while(rs.next()){
-
-            String tit = rs.getString(1);
-            String codice=  rs.getString(2);
-            arrayList.add(tit);
-            arrayCod.add(codice);
-
-        }
-        //cambio gli arraylist in array
-        Object [] arrayCanz = arrayList.toArray();
-        Object [] arrayCodici = arrayCod.toArray();
-        //creo una matrice la riempio in modo da avere due colonne, nella prima ci sarà il titolo e nella seconda il suo codice
-
-        String [][] matrice = new String[arrayList.size()][2];
-        for(int i=0; i< matrice.length; i++){
-            matrice[i][0] = arrayCanz[i].toString();
-            matrice[i][1] = arrayCodici[i].toString();
-        }
+        String [][] matrice= databaseInterface.cercaBranoMusicaleAutAnno(query);
         return matrice;
+
     }
 
     /**
@@ -173,20 +150,10 @@ class Brani {
 
     }
 
-    public static void registraPlaylist(emotionalsongs.Playlist playlist, Database db) throws SQLException {
-        String codcanz="";
-        //raccolgo in un array tutte le canzoni che voglio inserire nella playlist
-        Statement stm = db.getStatement();
+    public static void registraPlaylist(emotionalsongs.Playlist playlist) throws SQLException, RemoteException {
 
-        if((playlist.lunghezza)!=0){
-            Object [] array = playlist.getCanzoni().toArray();
-            for(int i = 0; i< array.length; i++){
-                String query="insert into playlist(codcanz,nomeplaylist,codf) Values('"+array[i]+"','"+playlist.getNomePlaylist()+"','"+playlist.getAutore().getCodiceFiscale()+"')";
-                Query q = new Query(query);
-                stm.executeUpdate(q.getQuery());
+        databaseInterface.RegistraPlaylist(playlist);
 
-            }
-        }
 
     }
 

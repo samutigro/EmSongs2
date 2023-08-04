@@ -937,7 +937,7 @@ public class GUI implements ActionListener {
             contatoreCanzoniSelezionate=0;
             contatore = null;
             try {
-                registraPlaylist(playlistTransizione, databaseInterface.getInstance());
+                registraPlaylist(playlistTransizione);
                 frame.setTitle("Emotional Songs");
                 frame.getContentPane().removeAll();
                 frame.getContentPane().add(mainPanel, BorderLayout.CENTER);

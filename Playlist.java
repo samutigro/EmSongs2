@@ -8,6 +8,7 @@ Auteri Samuele, MATRICOLA 749710, VA
 //Package della classe
 
 //Importazione della libreria esterna
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +16,9 @@ import java.util.ArrayList;
  * @author
  * @author
  */
-public class Playlist{
+public class Playlist implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private ArrayList<String> canzoni;
     private Utente autore;
     private String nome;

@@ -122,4 +122,49 @@ public class serverES extends UnicastRemoteObject implements InterfacciaDatabase
             return arrayList;
     }
 
+    public String[][] cercaBranoMusicaleAutAnno(Query query) throws SQLException, RemoteException{
+        Statement stm = db.getStatement();
+        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayList<String> arrayCod = new ArrayList<>();
+        ResultSet rs = stm.executeQuery(query.getQuery());
+        int tot=0;
+        //raccolta dei brani in un array e dei rispettivi codici
+
+        while(rs.next()){
+
+            String tit = rs.getString(1);
+            String codice=  rs.getString(2);
+            arrayList.add(tit);
+            arrayCod.add(codice);
+
+        }
+        //cambio gli arraylist in array
+        Object [] arrayCanz = arrayList.toArray();
+        Object [] arrayCodici = arrayCod.toArray();
+        //creo una matrice la riempio in modo da avere due colonne, nella prima ci sarà il titolo e nella seconda il suo codice
+
+        String [][] matrice = new String[arrayList.size()][2];
+        for(int i=0; i< matrice.length; i++){
+            matrice[i][0] = arrayCanz[i].toString();
+            matrice[i][1] = arrayCodici[i].toString();
+        }
+        return matrice;
+
+    }
+
+    public void RegistraPlaylist(emotionalsongs.Playlist playlist) throws SQLException, RemoteException{
+        Statement stm = db.getStatement();
+
+        if((playlist.lunghezza)!=0){
+            Object [] array = playlist.getCanzoni().toArray();
+            for(int i = 0; i< array.length; i++){
+                String query="insert into playlist(codcanz,nomeplaylist,codf) Values('"+array[i]+"','"+playlist.getNomePlaylist()+"','"+playlist.getAutore().getCodiceFiscale()+"')";
+                Query q = new Query(query);
+                stm.executeUpdate(q.getQuery());
+
+            }
+        }
+    }
+
+
 }

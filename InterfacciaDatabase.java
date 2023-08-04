@@ -28,4 +28,8 @@ public interface InterfacciaDatabase extends Remote{
     String[][] cercaBranoMusicaleTitolo(Query query) throws SQLException, RemoteException;
 
     ArrayList<String> QueryVisualizzaPlaylist(Query query) throws SQLException, RemoteException;
+
+    String[][] cercaBranoMusicaleAutAnno(Query query) throws SQLException, RemoteException;
+
+    void RegistraPlaylist(emotionalsongs.Playlist playlist) throws SQLException, RemoteException;
 }
