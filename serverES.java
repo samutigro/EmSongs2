@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import static emotionalsongs.Registrazione.login;
 import static emotionalsongs.Registrazione.registrazione;
@@ -70,17 +71,55 @@ public class serverES extends UnicastRemoteObject implements InterfacciaDatabase
         return user;
     }
 
-    public JListUtility QueryNomiPlaylist(Query query) throws SQLException, RemoteException{
+    public ArrayList<String> QueryNomiPlaylist(Query query) throws SQLException, RemoteException{
         JListUtility lista = new JListUtility();
 
-        Statement stm = db.getInstance().getStatement();
+        Statement stm = db.getStatement();
         ResultSet rs = stm.executeQuery(query.getQuery());
-
-            while(rs.next()){
-                String ris = rs.getString(1);
-                lista.addStringToList(ris);
-            }
-            return lista;
+        ArrayList<String> arrayList = new ArrayList<>();
+        while(rs.next()){
+            String ris = rs.getString(1);
+            arrayList.add(ris);
+        }
+        return arrayList;
 
     }
+
+   public String[][] cercaBranoMusicaleTitolo(Query query) throws SQLException{
+       Statement stm = db.getStatement();
+       ResultSet rs = stm.executeQuery(query.getQuery());
+       rs.next();
+       //raccolta dei brani in un array e dei rispettivi codici
+       ArrayList<String> arrayList = new ArrayList<>();
+       ArrayList<String> arrayCod = new ArrayList<>();
+       while(rs.next()){
+           String tit=rs.getString(1);
+           String cod = rs.getString(2);
+           arrayList.add(tit);
+           arrayCod.add(cod);
+       }
+       //cambio gli arraylist in array
+       Object [] arrayCanz = arrayList.toArray();
+       Object [] arrayCodici = arrayCod.toArray();
+       //creo una matrice la riempio in modo da avere due colonne, nella prima ci sarà il titolo e nella seconda il suo codice
+       String [][] matrice = new String[arrayList.size()][2];
+       for(int i=0; i< matrice.length; i++){
+           matrice[i][0] = arrayCanz[i].toString();
+           matrice[i][1] = arrayCodici[i].toString();
+       }
+       return matrice;
+   }
+
+   public ArrayList<String> QueryVisualizzaPlaylist(Query query) throws SQLException, RemoteException{
+        //JListUtility lista=new JListUtility();
+        Statement stm = db.getStatement();
+        ResultSet rs = stm.executeQuery(query.getQuery());
+        ArrayList<String> arrayList = new ArrayList<>();
+            while(rs.next()){
+                String ris = rs.getString(1);
+                arrayList.add(ris);
+            }
+            return arrayList;
+    }
+
 }

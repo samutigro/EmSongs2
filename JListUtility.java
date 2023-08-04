@@ -9,10 +9,11 @@ public class JListUtility extends JPanel implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    private JList<String> list;
-    private DefaultListModel<String> listModel;
+    private  JList<String> list;
+    private  DefaultListModel<String> listModel;
 
     private String playlistSelezionata="";
+
 
     public JListUtility() {
         //super("Tue playlist");

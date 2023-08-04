@@ -1247,14 +1247,18 @@ public class GUI implements ActionListener {
             String q = "select distinct(nomeplaylist) from playlist where codf = '" + utenteLoggato.getCodiceFiscale() +"'";
             Query query = new Query(q);
             //
-            JListUtility lista;
+            JListUtility lista = new JListUtility();
             try {
-                lista = databaseInterface.QueryNomiPlaylist(query);
+                ArrayList<String> arrayList =databaseInterface.QueryVisualizzaPlaylist(query);
+                for(int i=0; i<arrayList.size(); i++){
+                    lista.addStringToList(arrayList.get(i));
+                }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
+
 
             bottoneLista2 = new JButton("Conferma");
             bottoneLista2.addActionListener(this);
@@ -1276,22 +1280,18 @@ public class GUI implements ActionListener {
             String q = "select distinct(nomeplaylist) from playlist where codf = '" + utenteLoggato.getCodiceFiscale() +"'";
             Query query = new Query(q);
             JListUtility lista = new JListUtility();
-            Statement stm = null;
+
             try {
-                stm = databaseInterface.getStatement();
+                ArrayList<String> arrayList =databaseInterface.QueryVisualizzaPlaylist(query);
+                for(int i=0; i<arrayList.size(); i++){
+                    lista.addStringToList(arrayList.get(i));
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
 
-            try {
-                ResultSet rs = stm.executeQuery(query.getQuery());
-                while(rs.next()){
-                    String ris = rs.getString(1);
-                    lista.addStringToList(ris);
-                }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
             bottoneLista = new JButton("Conferma");
             bottoneLista.addActionListener(this);
             lista.add(bottoneLista);
@@ -1310,25 +1310,20 @@ public class GUI implements ActionListener {
             String q = "select titolo from canzoni where codcanz IN( Select codcanz from playlist where nomeplaylist = "+"'"+playlistVisualizzazione+"'"+" AND codf = "+"'"+ utenteLoggato.getCodiceFiscale()+"'"+")";
             Query query = new Query(q);
             JListUtility lista = new JListUtility();
-            Statement stm = null;
-            try {
-                stm = databaseInterface.getStatement();
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
-            System.out.println("ok");
-            try {
-                System.out.println("ok");
-                ResultSet rs = stm.executeQuery(query.getQuery());
 
-                while(rs.next()){
-                    String ris = rs.getString(1);
-                    lista.addStringToList(ris);
-                    System.out.println("ok");
+
+            try {
+                ArrayList<String> arrayList =databaseInterface.QueryVisualizzaPlaylist(query);
+                for(int i=0; i<arrayList.size(); i++){
+                    lista.addStringToList(arrayList.get(i));
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
             }
+
+
             indietro=new JButton("Indietro");
             indietro.addActionListener(this);
             lista.add(indietro);

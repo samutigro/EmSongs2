@@ -1,13 +1,43 @@
 package emotionalsongs;
 
 import database.Database;
+import database.InterfacciaDatabase;
 import database.Query;
 import java.io.*;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.sql.*;
 import java.util.ArrayList;
 //import javax.mail.*;
 //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
 class Brani {
+    static Registry registry;
+
+    static {
+        try {
+            registry = LocateRegistry.getRegistry("127.0.0.1", 8999);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static InterfacciaDatabase databaseInterface;
+
+    static {
+        try {
+            databaseInterface = (InterfacciaDatabase)registry.lookup("SERVER");
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    Brani() throws RemoteException, NotBoundException {
+    }
+
     /**
      *
      * @param brano brano da dare in input al metodo, che restituirà tutte le canzoni con la stringa del brano nel titolo
@@ -15,31 +45,11 @@ class Brani {
      * @return ritora una matrice contennte i titoli e i rispettivi codici univoci
      * @throws SQLException eccezione sql
      */
-    public static String[][] cercaBranoMusicale(String brano, Database db) throws SQLException{
+    public static String[][] cercaBranoMusicale(String brano, Database db) throws SQLException, RemoteException{
         //query che cerca tutti i brani che hanno nel titolo la string brano
         String q = "select titolo, codcanz from canzoni where titolo like '%"+brano+"%'";
-        Statement stm = db.getStatement();
         Query query = new Query(q);
-        ResultSet rs = stm.executeQuery(query.getQuery());
-        rs.next();
-        //raccolta dei brani in un array e dei rispettivi codici
-        ArrayList<String> arrayList = new ArrayList<>();
-        ArrayList<String> arrayCod = new ArrayList<>();
-        while(rs.next()){
-            String tit=rs.getString(1);
-            String cod = rs.getString(2);
-            arrayList.add(tit);
-            arrayCod.add(cod);
-        }
-        //cambio gli arraylist in array
-        Object [] arrayCanz = arrayList.toArray();
-        Object [] arrayCodici = arrayCod.toArray();
-        //creo una matrice la riempio in modo da avere due colonne, nella prima ci sarà il titolo e nella seconda il suo codice
-        String [][] matrice = new String[arrayList.size()][2];
-        for(int i=0; i< matrice.length; i++){
-            matrice[i][0] = arrayCanz[i].toString();
-            matrice[i][1] = arrayCodici[i].toString();
-        }
+        String [][] matrice=databaseInterface.cercaBranoMusicaleTitolo(query);
         return matrice;
     }
 

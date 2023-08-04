@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public interface InterfacciaDatabase extends Remote{
     public Database getInstance() throws SQLException, RemoteException;
@@ -22,5 +23,9 @@ public interface InterfacciaDatabase extends Remote{
 
       Utente QueryLogin(Query query) throws SQLException, RemoteException;
 
-      JListUtility QueryNomiPlaylist(Query query) throws SQLException, RemoteException;
+    ArrayList<String> QueryNomiPlaylist(Query query) throws SQLException, RemoteException;
+
+    String[][] cercaBranoMusicaleTitolo(Query query) throws SQLException, RemoteException;
+
+    ArrayList<String> QueryVisualizzaPlaylist(Query query) throws SQLException, RemoteException;
 }
