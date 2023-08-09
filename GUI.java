@@ -34,6 +34,7 @@ import java.util.ArrayList;
 //Importazione dei metodi
 import static emotionalsongs.Brani.cercaBranoMusicale;
 import static emotionalsongs.Brani.registraPlaylist;
+import static emotionalsongs.Playlist.rimuoviDuplicati;
 import static emotionalsongs.Registrazione.login;
 import static emotionalsongs.Registrazione.registrazione;
 
@@ -52,7 +53,7 @@ public class GUI implements ActionListener {
 
     private JPanel playlistPanelB,viewPlaylistPanel,mainPanel, registrationPanel, searchPanel, loginPanel, playlistPanel, ratingPanel, createPlaylistPanel, tablePanel, mainbuttonsPanel, maintitlePanel;
 
-    private JButton bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
+    private JButton searchAutAnnoAddPlaylist,confermaAggiuntaPlaylist, bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist,searchTitoloAddPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
 
     private JLabel nameLabel, surnameLabel, usernameLabel, emailLabel, dateLabel, codiceFiscale, passwordLabel, yearLabel, authorLabel, titleLabel, insertsongLabel, namePLaylistLabel, userLable, pwdLable, loginLabel, searchLabel;
 
@@ -65,6 +66,8 @@ public class GUI implements ActionListener {
     private emotionalsongs.Utente utenteLoggato;
 
     private emotionalsongs.Playlist playlistTransizione;
+
+    private ArrayList<String> canzoniPlaylistGlobale;
     public static String playlistVisualizzazione;
 
     /**
@@ -858,6 +861,7 @@ public class GUI implements ActionListener {
                 column.setMaxWidth(0);                                                          //set the maximum width of the column to zero
 
                 ArrayList<String> canzoniPlaylist = new ArrayList<>();
+                ArrayList<String> canzoniPlaylistDefinitiva = new ArrayList<>();
                 //Listener per quando si schiaccia su una riga della tabella
 
 
@@ -868,12 +872,13 @@ public class GUI implements ActionListener {
                             int row = target.getSelectedRow(); // get the selected row index
                             String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
                             canzoniPlaylist.add(value);
+                            rimuoviDuplicati(canzoniPlaylist);
+                            for (int i = 0; i<canzoniPlaylist.size(); i++){
+                                System.out.println(canzoniPlaylist.get(i));
+                            }
                             playlistTransizione.addCanzoni(canzoniPlaylist);
                             contatoreCanzoniSelezionate++;
                             contatore.setText(Integer.toString(contatoreCanzoniSelezionate));
-
-                            // do something with the selected row, for example:
-
 
                         }
                     }
@@ -975,6 +980,7 @@ public class GUI implements ActionListener {
                             int row = target.getSelectedRow(); // get the selected row index
                             String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
                             canzoniPlaylist.add(value);
+                            rimuoviDuplicati(canzoniPlaylist);
                             playlistTransizione.addCanzoni(canzoniPlaylist);
                             contatoreCanzoniSelezionate++;
                             contatore.setText(Integer.toString(contatoreCanzoniSelezionate));
@@ -1307,6 +1313,7 @@ public class GUI implements ActionListener {
 
 
         }else if(e.getSource() == bottoneLista){
+            //usato nella funzione vedi playlist
             String q = "select titolo from canzoni where codcanz IN( Select codcanz from playlist where nomeplaylist = "+"'"+playlistVisualizzazione+"'"+" AND codf = "+"'"+ utenteLoggato.getCodiceFiscale()+"'"+")";
             Query query = new Query(q);
             JListUtility lista = new JListUtility();
@@ -1334,6 +1341,7 @@ public class GUI implements ActionListener {
             frame.repaint();
 
         }else if(e.getSource() == bottoneLista2){
+            //usato in aggiungi canzone a playlist
             searchPanel = new JPanel(new GridBagLayout());
             searchPanel.setForeground(new Color(255, 255, 255));
             searchPanel.setBackground(new Color(32, 33, 35));
@@ -1393,22 +1401,22 @@ public class GUI implements ActionListener {
             searchPanel.add(Titlefield, gbc);
 
             //Ricerca per titolo
-            searchTitoloPlaylist = new JButton("Cerca per titolo");
+            searchTitoloAddPlaylist = new JButton("Cerca per titolo");
             gbc.gridx = 1;
             gbc.gridy = 5;
-            searchTitoloPlaylist.addActionListener(this);
-            searchTitoloPlaylist.setForeground(new Color(255, 255, 255));
-            searchTitoloPlaylist.setBackground(new Color(70, 80, 120));
-            searchPanel.add(searchTitoloPlaylist, gbc);
+            searchTitoloAddPlaylist.addActionListener(this);
+            searchTitoloAddPlaylist.setForeground(new Color(255, 255, 255));
+            searchTitoloAddPlaylist.setBackground(new Color(70, 80, 120));
+            searchPanel.add(searchTitoloAddPlaylist, gbc);
 
             //Ricerca per autore e anno
-            searchAutAnno = new JButton("Cerca per autore e anno");
+            searchAutAnnoAddPlaylist = new JButton("Cerca per autore e anno");
             gbc.gridx = 1;
             gbc.gridy = 4;
-            searchAutAnno.addActionListener(this);
-            searchAutAnno.setForeground(new Color(255, 255, 255));
-            searchAutAnno.setBackground(new Color(70, 80, 120));
-            searchPanel.add(searchAutAnno, gbc);
+            searchAutAnnoAddPlaylist.addActionListener(this);
+            searchAutAnnoAddPlaylist.setForeground(new Color(255, 255, 255));
+            searchAutAnnoAddPlaylist.setBackground(new Color(70, 80, 120));
+            searchPanel.add(searchAutAnnoAddPlaylist, gbc);
 
             indietro = new JButton("Indietro");
             gbc.gridx = 0;
@@ -1423,6 +1431,210 @@ public class GUI implements ActionListener {
             frame.getContentPane().add(searchPanel, BorderLayout.CENTER);
             frame.revalidate();
             frame.repaint();
+
+        } else if(e.getSource() == searchTitoloAddPlaylist){
+            //ricerca della canzone da inserire in una playlist tramite Titolo
+            tablePanel = new JPanel();
+            tablePanel.setBackground(new Color(32, 33, 35));
+            String [] col = {"titolo","codice"};
+            String titolo = Titlefield.getText();
+
+            try{
+                table = new JTable(cercaBranoMusicale(titolo, databaseInterface.getInstance()) ,col);
+                TableColumn column = table.getColumnModel().getColumn(1);            //get the TableColumn object for the desired column index
+                column.setMinWidth(0);                                                          //set the minimum width of the column to zero
+                column.setMaxWidth(0);                                                          //set the maximum width of the column to zero
+
+                canzoniPlaylistGlobale = new ArrayList<>();
+                //Listener per quando si schiaccia su una riga della tabella
+
+
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 1) { // detect a single click
+                            JTable target = (JTable)e.getSource(); // get the JTable object that triggered the event
+                            int row = target.getSelectedRow(); // get the selected row index
+                            String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
+                            canzoniPlaylistGlobale.add(value);
+                            rimuoviDuplicati(canzoniPlaylistGlobale);
+                            contatoreCanzoniSelezionate++;
+                            contatore.setText(Integer.toString(contatoreCanzoniSelezionate));
+
+
+                        }
+                    }
+                });
+
+
+
+                table.setBackground(new Color(32, 33, 35));
+                table.setForeground(new Color(255, 255, 255));
+                table.setDefaultEditor(Object.class, null);                               //Disabilita la modifica delle celle con doppio clic
+            } catch(SQLException ex){
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+
+
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.getViewport().setForeground(Color.white);
+            scrollPane.getViewport().setBackground(Color.BLACK);
+
+            contatoreCanzoniSelezionate = 0;
+
+            //JLabel label = new JLabel("canzoni selezionate:");
+            //label.setForeground(new Color(255, 255, 255));
+            //label.setBackground(new Color(70, 80, 120));
+
+            contatore = new JTextField(Integer.toString(contatoreCanzoniSelezionate), 10);
+            contatore.setEnabled(false);
+            contatore.setForeground(new Color(255, 255, 255));
+            contatore.setBackground(new Color(70, 80, 120));
+
+
+            indietro = new JButton("Indietro");
+            indietro.setForeground(new Color(255, 255, 255));
+            indietro.setBackground(new Color(70, 80, 120));
+            indietro.addActionListener(this);
+
+            confermaAggiuntaPlaylist = new JButton("conferma");
+            confermaAggiuntaPlaylist.setForeground(new Color(255, 255, 255));
+            confermaAggiuntaPlaylist.setBackground(new Color(70, 80, 120));
+            confermaAggiuntaPlaylist.addActionListener(this);
+
+            tablePanel.add(scrollPane);
+            //tablePanel.add(label);
+            tablePanel.add(contatore);
+            tablePanel.add(confermaAggiuntaPlaylist);
+            tablePanel.add(indietro);
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+
+
+        } else if(e.getSource()==confermaAggiuntaPlaylist){
+                //query dei codici delle canzoni presenti nella playlistScelta --> in playlistVisualizzazione
+
+                String q="Select codcanz from Playlist where nomeplaylist = '"+ playlistVisualizzazione + "' and codF = '" + utenteLoggato.getCodiceFiscale() +"'";
+                Query q1=new Query(q);
+                ArrayList<String> canzoniPresenti = new ArrayList<>();
+            try {
+                canzoniPresenti = databaseInterface.QueryRicercaCanzoniGiaInPlaylist(q1);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            //si raccolgono i codici delle canzoni da aggiungere --> in canzoniPlaylistGlobale
+
+                //si confrontalo i due set di codici e si tolgono i duplicati se ci sono dal set delle canzoni d aggiungere
+             ArrayList<String> canzoniDefintive = rimuoviDuplicati(canzoniPlaylistGlobale,canzoniPresenti);
+                //si fa una query che inserisce le nuove canzoni nella playlist
+                 //ci serve il CF dell'utente + nomePlaylist+ codici
+            Playlist playlist=new Playlist(playlistVisualizzazione, utenteLoggato);
+            playlist.addCanzoni(canzoniDefintive);
+            try {
+                databaseInterface.RegistraPlaylist(playlist);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            canzoniPlaylistGlobale=null;
+            JOptionPane.showMessageDialog(frame,"inserimento riuscito!");
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(mainPanel);
+            frame.revalidate();
+            frame.repaint();
+
+        } else if(e.getSource()==searchAutAnnoAddPlaylist){
+            {
+                tablePanel = new JPanel();
+                tablePanel.setBackground(new Color(32, 33, 35));
+                String [] col = {"titolo","codice"};
+                String autore = Authorfield.getText();
+                int anno = Integer.parseInt(yearfield.getText());
+
+                try{
+                    table = new JTable(cercaBranoMusicale(autore,anno, databaseInterface.getInstance()) ,col);
+                    TableColumn column = table.getColumnModel().getColumn(1);            //get the TableColumn object for the desired column index
+                    column.setMinWidth(0);                                                          //set the minimum width of the column to zero
+                    column.setMaxWidth(0);                                                          //set the maximum width of the column to zero
+
+                    canzoniPlaylistGlobale = new ArrayList<>();
+                    //Listener per quando si schiaccia su una riga della tabella
+
+
+                    table.addMouseListener(new MouseAdapter() {
+                        public void mouseClicked(MouseEvent e) {
+                            if (e.getClickCount() == 1) { // detect a single click
+                                JTable target = (JTable)e.getSource(); // get the JTable object that triggered the event
+                                int row = target.getSelectedRow(); // get the selected row index
+                                String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
+                                canzoniPlaylistGlobale.add(value);
+                                rimuoviDuplicati(canzoniPlaylistGlobale);
+                                contatoreCanzoniSelezionate++;
+                                contatore.setText(Integer.toString(contatoreCanzoniSelezionate));
+
+
+                            }
+                        }
+                    });
+
+
+
+                    table.setBackground(new Color(32, 33, 35));
+                    table.setForeground(new Color(255, 255, 255));
+                    table.setDefaultEditor(Object.class, null);                               //Disabilita la modifica delle celle con doppio clic
+                } catch(SQLException ex){
+                    throw new RuntimeException(ex);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+
+                JScrollPane scrollPane = new JScrollPane(table);
+                scrollPane.getViewport().setForeground(Color.white);
+                scrollPane.getViewport().setBackground(Color.BLACK);
+
+                contatoreCanzoniSelezionate = 0;
+
+                //JLabel label = new JLabel("canzoni selezionate:");
+                //label.setForeground(new Color(255, 255, 255));
+                //label.setBackground(new Color(70, 80, 120));
+
+                contatore = new JTextField(Integer.toString(contatoreCanzoniSelezionate), 10);
+                contatore.setEnabled(false);
+                contatore.setForeground(new Color(255, 255, 255));
+                contatore.setBackground(new Color(70, 80, 120));
+
+
+                indietro = new JButton("Indietro");
+                indietro.setForeground(new Color(255, 255, 255));
+                indietro.setBackground(new Color(70, 80, 120));
+                indietro.addActionListener(this);
+
+                confermaAggiuntaPlaylist = new JButton("conferma");
+                confermaAggiuntaPlaylist.setForeground(new Color(255, 255, 255));
+                confermaAggiuntaPlaylist.setBackground(new Color(70, 80, 120));
+                confermaAggiuntaPlaylist.addActionListener(this);
+
+                tablePanel.add(scrollPane);
+
+                tablePanel.add(contatore);
+                tablePanel.add(confermaAggiuntaPlaylist);
+                tablePanel.add(indietro);
+
+                frame.getContentPane().removeAll();
+                frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
+                frame.revalidate();
+                frame.repaint();
+
+            }
         }
     }
 

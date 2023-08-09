@@ -10,6 +10,7 @@ Auteri Samuele, MATRICOLA 749710, VA
 //Importazione della libreria esterna
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Classe per la definizione e la gestione di playlist
@@ -83,5 +84,19 @@ public class Playlist implements Serializable {
     public void addCanzoni(ArrayList<String> brani){
         this.canzoni = brani;
         this.lunghezza = brani.toArray().length;
+    }
+
+    public static void rimuoviDuplicati(ArrayList<String> lista) {
+        HashSet<String> set = new HashSet<>(lista);
+        lista.clear();
+        lista.addAll(set);
+    }
+
+    public static ArrayList<String> rimuoviDuplicati(ArrayList<String> secondaLista, ArrayList<String> primaLista) {
+        ArrayList<String> risultato = new ArrayList<>(secondaLista);
+
+        risultato.removeAll(primaLista);
+
+        return risultato;
     }
 }

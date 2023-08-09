@@ -167,4 +167,19 @@ public class serverES extends UnicastRemoteObject implements InterfacciaDatabase
     }
 
 
+
+    public ArrayList<String> QueryRicercaCanzoniGiaInPlaylist(Query query) throws SQLException, RemoteException{
+        Statement stm = db.getStatement();
+        ResultSet rs = stm.executeQuery(query.getQuery());
+        ArrayList<String> arrayList = new ArrayList<>();
+        while(rs.next()){
+            String ris = rs.getString(1);
+            arrayList.add(ris);
+        }
+        return arrayList;
+
+    }
+
+
+
 }
