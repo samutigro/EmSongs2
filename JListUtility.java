@@ -43,6 +43,8 @@ public class JListUtility extends JPanel implements Serializable {
                 String selectedValue = (String)list.getSelectedValue();
                 playlistSelezionata = selectedValue;
                 text.setText(selectedValue);
+                //System.out.println(playlistSelezionata +" selezionata");
+                //System.out.println(GUI.playlistVisualizzazione + "   visualizzata");
             }
         });
 
@@ -61,6 +63,10 @@ public class JListUtility extends JPanel implements Serializable {
         }else{
             return playlistSelezionata;
         }
+    }
+
+    public String readText(){
+        return playlistSelezionata;
     }
 
 

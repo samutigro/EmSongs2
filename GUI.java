@@ -14,6 +14,8 @@ import database.Query;
 
 //Importazione di librerie esterne
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
@@ -32,8 +34,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 //Importazione dei metodi
-import static emotionalsongs.Brani.cercaBranoMusicale;
-import static emotionalsongs.Brani.registraPlaylist;
+import static emotionalsongs.Brani.*;
 import static emotionalsongs.Playlist.rimuoviDuplicati;
 import static emotionalsongs.Registrazione.login;
 import static emotionalsongs.Registrazione.registrazione;
@@ -53,11 +54,11 @@ public class GUI implements ActionListener {
 
     private JPanel playlistPanelB,viewPlaylistPanel,mainPanel, registrationPanel, searchPanel, loginPanel, playlistPanel, ratingPanel, createPlaylistPanel, tablePanel, mainbuttonsPanel, maintitlePanel;
 
-    private JButton searchAutAnnoAddPlaylist,confermaAggiuntaPlaylist, bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist,searchTitoloAddPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
+    private JButton confermaRating,searchAutAnnoAddPlaylist,confermaAggiuntaPlaylist, bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist,searchTitoloAddPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
 
     private JLabel nameLabel, surnameLabel, usernameLabel, emailLabel, dateLabel, codiceFiscale, passwordLabel, yearLabel, authorLabel, titleLabel, insertsongLabel, namePLaylistLabel, userLable, pwdLable, loginLabel, searchLabel;
 
-    private JTextField contatore, usernameField, emailField, dateField, CFfield, yearfield, Authorfield, Titlefield, insertsongField, namePlaylistfield, nameTextField, surnameTextField, userField;
+    private JTextField  textRating,contatore, usernameField, emailField, dateField, CFfield, yearfield, Authorfield, Titlefield, insertsongField, namePlaylistfield, nameTextField, surnameTextField, userField;
 
     private JPasswordField passwordField, pwdField;
 
@@ -68,7 +69,8 @@ public class GUI implements ActionListener {
     private emotionalsongs.Playlist playlistTransizione;
 
     private ArrayList<String> canzoniPlaylistGlobale;
-    public static String playlistVisualizzazione;
+    public static JButton avantiRating;
+    public static String playlistVisualizzazione, canzoneDaValutare, emozioneRating, votoRating;
 
     /**
      * Costruttore della classe GUI che implementa l'interfaccia grafica
@@ -1280,8 +1282,147 @@ public class GUI implements ActionListener {
             t1.start();
 
 
-        }else if (e.getSource() == searchTitoloRating){
+        }else if (e.getSource() == searchTitoloRating) {
+
+                tablePanel = new JPanel();
+                tablePanel.setBackground(new Color(32, 33, 35));
+                String[] col = {"titolo", ""};
+                String titolo = Titlefield.getText();
+
+                try {
+                    table = new JTable(cercaBranoMusicale(titolo, databaseInterface.getInstance()), col);
+                    TableColumn column = table.getColumnModel().getColumn(1);        //get the TableColumn object for the desired column index
+                    column.setMinWidth(0);                                                      // set the minimum width of the column to zero
+                    column.setMaxWidth(0);                                                      // set the maximum width of the column to zero
+                    //Listener per quando si schiaccia su una riga della tabella
+
+
+                    table.addMouseListener(new MouseAdapter() {
+                        public void mouseClicked(MouseEvent e) {
+                            if (e.getClickCount() == 1) { // detect a single click
+                                JTable target = (JTable) e.getSource(); // get the JTable object that triggered the event
+                                int row = target.getSelectedRow(); // get the selected row index
+                                String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
+                                canzoneDaValutare = value;
+
+
+                            }
+                        }
+                    });
+
+                    table.setBackground(new Color(32, 33, 35));
+                    table.setForeground(new Color(255, 255, 255));
+                    table.setDefaultEditor(Object.class, null);
+                    //Disabilita la modifica delle celle con doppio clic
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+                JScrollPane scrollPane = new JScrollPane(table);
+                scrollPane.getViewport().setForeground(Color.white);
+                scrollPane.getViewport().setBackground(Color.BLACK);
+
+                indietro = new JButton("Indietro");
+                indietro.setForeground(new Color(255, 255, 255));
+                indietro.setBackground(new Color(70, 80, 120));
+                indietro.addActionListener(this);
+
+                avantiRating = new JButton("Avanti");
+                avantiRating.setForeground(new Color(255, 255, 255));
+                avantiRating.setBackground(new Color(70, 80, 120));
+                avantiRating.addActionListener(this);
+
+
+                tablePanel.add(scrollPane);
+                tablePanel.add(indietro);
+                tablePanel.add(avantiRating);
+
+                frame.getContentPane().removeAll();
+                frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
+                frame.revalidate();
+                frame.repaint();
+
+                table.getModel().addTableModelListener(new TableModelListener() {
+                    /**
+                     * @param e a {@code TableModelEvent} to notify listener that a table model
+                     *          has changed
+                     */
+                    public void tableChanged(TableModelEvent e) {
+                        int row = table.getSelectedRow();
+                        int col = table.getSelectedColumn();
+                        System.out.println(row + " " + col);
+                    }
+                });
+
+                //Bottone per confermare la ricerca una volta inseriti autore e anno
+
+        }else if(e.getSource()==avantiRating){
+
+            JPanel ratingPanel = new JPanel();
+            ratingPanel.setLayout(new FlowLayout());
+            ratingPanel.setBackground(new Color(32, 33, 35));
+
+            String [] emozioni = {"Amazement","Solemnity","Tenderness","Nostalgia","Calmness","Power","Joy","Tension","Sadness"};
+            JList<String> list=new JList(emozioni);
+            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            list.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedIndex = list.getSelectedIndex();
+                        if (selectedIndex != -1) {
+                            String selectedElement = emozioni[selectedIndex];
+                            emozioneRating = selectedElement;
+                        }
+                    }
+                }
+            });
+            JLabel labelEmoz=new JLabel("Scegliere emozione da valutare   ");
+            labelEmoz.setForeground(Color.WHITE);
+            JLabel labelVoto=new JLabel("Inserire il voto relativo all'emozione(tra 1 e 5) ");
+            labelVoto.setForeground(Color.WHITE);
+            JLabel spazio = new JLabel("               ");
+            textRating=new JTextField(10);
+            confermaRating = new JButton("Conferma voto");
+            confermaRating.addActionListener(this);
+
+            JScrollPane scrollPane = new JScrollPane(list);
+            ratingPanel.add(labelEmoz);
+            ratingPanel.add(list);
+            ratingPanel.add(spazio);
+            ratingPanel.add(labelVoto);
+            ratingPanel.add(textRating);
+            ratingPanel.add(confermaRating);
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(ratingPanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
             //qua mettere il codice per produrre una tabella che contenere i brani simili a quello cercato, poi selezionarne uno e quello sarà quello che si valuterà
+        }else if (e.getSource() == confermaRating){
+            //si potrebbe fare un controllo sul voto per vedere che sia < 5
+            String voto = textRating.getText();
+            String emozione = emozioneRating;
+            emozioneRating=null;
+            String brano = canzoneDaValutare;
+            canzoneDaValutare=null;
+            String cf = utenteLoggato.getCodiceFiscale();
+            String q = "insert into emozioni(codcanz,emozione,voto,codf) values ('"+brano+"','"+emozione+"','"+voto+"','"+cf+"')";
+            Query query = new Query(q);
+            try {
+                registraVotoEmozione(query);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            JOptionPane.showMessageDialog(frame,"valutazione inserita!");
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+
         }else if (e.getSource() == viewPlaylistButton){
             String q = "select distinct(nomeplaylist) from playlist where codf = '" + utenteLoggato.getCodiceFiscale() +"'";
             Query query = new Query(q);
@@ -1302,20 +1443,26 @@ public class GUI implements ActionListener {
             bottoneLista.addActionListener(this);
             lista.add(bottoneLista);
 
+            //thread che fa il controllo continuo della playlist selezionata
+            Thread1 t1 = new Thread1(lista);
+            t1.start();
+
             frame.getContentPane().removeAll();
             //aggiungo la lista come panel al frame
             frame.getContentPane().add(lista);
             frame.revalidate();
             frame.repaint();
-            //thread che fa il controllo continuo della playlist selezionata
-            Thread1 t1 = new Thread1(lista);
-            t1.start();
+
+
+
 
 
         }else if(e.getSource() == bottoneLista){
+
             //usato nella funzione vedi playlist
             String q = "select titolo from canzoni where codcanz IN( Select codcanz from playlist where nomeplaylist = "+"'"+playlistVisualizzazione+"'"+" AND codf = "+"'"+ utenteLoggato.getCodiceFiscale()+"'"+")";
             Query query = new Query(q);
+            System.out.println(q);
             JListUtility lista = new JListUtility();
 
 
@@ -1336,6 +1483,7 @@ public class GUI implements ActionListener {
             lista.add(indietro);
             frame.getContentPane().removeAll();
             //aggiungo la lista come panel al frame
+            playlistVisualizzazione=null;
             frame.getContentPane().add(lista);
             frame.revalidate();
             frame.repaint();
@@ -1516,10 +1664,10 @@ public class GUI implements ActionListener {
 
 
         } else if(e.getSource()==confermaAggiuntaPlaylist){
-                //query dei codici delle canzoni presenti nella playlistScelta --> in playlistVisualizzazione
 
                 String q="Select codcanz from Playlist where nomeplaylist = '"+ playlistVisualizzazione + "' and codF = '" + utenteLoggato.getCodiceFiscale() +"'";
                 Query q1=new Query(q);
+                 System.out.println(q);
                 ArrayList<String> canzoniPresenti = new ArrayList<>();
             try {
                 canzoniPresenti = databaseInterface.QueryRicercaCanzoniGiaInPlaylist(q1);
@@ -1545,7 +1693,7 @@ public class GUI implements ActionListener {
             }
             canzoniPlaylistGlobale=null;
             JOptionPane.showMessageDialog(frame,"inserimento riuscito!");
-
+            playlistVisualizzazione=null;
             frame.getContentPane().removeAll();
             frame.getContentPane().add(mainPanel);
             frame.revalidate();

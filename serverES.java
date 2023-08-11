@@ -180,6 +180,11 @@ public class serverES extends UnicastRemoteObject implements InterfacciaDatabase
 
     }
 
+    public void RegistraVotoEmozione(Query query) throws SQLException, RemoteException{
+        Statement stm = db.getStatement();
+        stm.executeUpdate(query.getQuery());
+    }
+
 
 
 }

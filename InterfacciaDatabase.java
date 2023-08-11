@@ -35,5 +35,7 @@ public interface InterfacciaDatabase extends Remote{
 
     ArrayList<String> QueryRicercaCanzoniGiaInPlaylist(Query query) throws SQLException, RemoteException;
 
+    void RegistraVotoEmozione(Query query) throws SQLException, RemoteException;
+
 
 }

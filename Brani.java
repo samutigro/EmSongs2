@@ -146,8 +146,8 @@ class Brani {
 
     }
 
-    public static void registraVotoEmozione(){
-
+    public static void registraVotoEmozione(Query query) throws SQLException, RemoteException {
+        databaseInterface.RegistraVotoEmozione(query);
     }
 
     public static void registraPlaylist(emotionalsongs.Playlist playlist) throws SQLException, RemoteException {
