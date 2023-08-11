@@ -592,7 +592,7 @@ public class GUI implements ActionListener {
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(10, 10, 10, 10);
 
-            searchLabel = new JLabel("Cerca la canzone da valutare per titolo o autore/anno");
+            searchLabel = new JLabel("Cerca la canzone da valutare per titolo");
             searchLabel.setForeground(Color.WHITE);
             searchLabel.setFont(new Font("Arial", Font.BOLD, 24));
             gbc.gridx = 0;
@@ -608,33 +608,6 @@ public class GUI implements ActionListener {
             titleLabel.setForeground(new Color(255, 255, 255));
             searchPanel.add(titleLabel, gbc);
 
-            authorLabel = new JLabel("Autore:");
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            authorLabel.setForeground(new Color(255, 255, 255));
-            searchPanel.add(authorLabel, gbc);
-
-            yearLabel = new JLabel("Anno:");
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            yearLabel.setForeground(new Color(255, 255, 255));
-            searchPanel.add(yearLabel, gbc);
-
-            yearfield = new JTextField(20);
-            yearfield.setCaretColor(Color.WHITE);
-            gbc.gridx = 1;
-            gbc.gridy = 2;
-            yearfield.setForeground(new Color(255, 255, 255));
-            yearfield.setBackground(new Color(32, 33, 35));
-            searchPanel.add(yearfield, gbc);
-
-            Authorfield = new JTextField(20);
-            Authorfield.setCaretColor(Color.WHITE);
-            gbc.gridx = 1;
-            gbc.gridy = 3;
-            Authorfield.setForeground(new Color(255, 255, 255));
-            Authorfield.setBackground(new Color(32, 33, 35));
-            searchPanel.add(Authorfield, gbc);
 
             Titlefield = new JTextField(20);
             Titlefield.setCaretColor(Color.WHITE);
@@ -654,15 +627,6 @@ public class GUI implements ActionListener {
             searchTitoloRating.setBackground(new Color(70, 80, 120));
             searchPanel.add(searchTitoloRating, gbc);
 
-            //Ricerca per autore e anno
-            //da cambiare
-            searchAutAnnoRating = new JButton("Cerca per autore e anno");
-            gbc.gridx = 1;
-            gbc.gridy = 4;
-            searchAutAnnoRating.addActionListener(this);
-            searchAutAnnoRating.setForeground(new Color(255, 255, 255));
-            searchAutAnnoRating.setBackground(new Color(70, 80, 120));
-            searchPanel.add(searchAutAnnoRating, gbc);
 
             indietro = new JButton("Indietro");
             gbc.gridx = 0;
