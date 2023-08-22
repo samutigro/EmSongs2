@@ -52,9 +52,9 @@ public class GUI implements ActionListener {
 
     private final JFrame frame;
 
-    private JPanel playlistPanelB,viewPlaylistPanel,mainPanel, registrationPanel, searchPanel, loginPanel, playlistPanel, ratingPanel, createPlaylistPanel, tablePanel, mainbuttonsPanel, maintitlePanel;
+    private JPanel emotionPanel,playlistPanelB,viewPlaylistPanel,mainPanel, registrationPanel, searchPanel, loginPanel, playlistPanel, ratingPanel, createPlaylistPanel, tablePanel, mainbuttonsPanel, maintitlePanel;
 
-    private JButton confermaRating,searchAutAnnoAddPlaylist,confermaAggiuntaPlaylist, bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist,searchTitoloAddPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
+    private JButton emotionButton, confermaRating,searchAutAnnoAddPlaylist,confermaAggiuntaPlaylist, bottoneLista,bottoneLista2, searchAutAnnoRating, searchTitoloRating, avanti, confermaPlaylist,searchTitoloAddPlaylist, searchTitoloPlaylist,searchAutAnnoPlaylist, logoutButton, viewPlaylistButton, registrationButton, loginButton, searchPlaylistButton, searchButton, registrationSaveButton, login, searchTitolo, playlistButton, ratingButton, searchAutAnno, creaplaylistButton, addsongButton, avantiPlay, indietro;
 
     private JLabel nameLabel, surnameLabel, usernameLabel, emailLabel, dateLabel, codiceFiscale, passwordLabel, yearLabel, authorLabel, titleLabel, insertsongLabel, namePLaylistLabel, userLable, pwdLable, loginLabel, searchLabel;
 
@@ -71,6 +71,10 @@ public class GUI implements ActionListener {
     private ArrayList<String> canzoniPlaylistGlobale;
     public static JButton avantiRating;
     public static String playlistVisualizzazione, canzoneDaValutare, emozioneRating, votoRating;
+    private JButton searchTitoloEmozioni;
+    private JButton searchEmozioni;
+    private JButton confermaEmozioni;
+    private String branoEmozione;
 
     /**
      * Costruttore della classe GUI che implementa l'interfaccia grafica
@@ -464,6 +468,18 @@ public class GUI implements ActionListener {
                 ratingButton.setBackground(new Color(70, 80, 120));
                 ratingButton.setForeground(Color.WHITE);
                 buttonPanel.add(ratingButton, c);
+
+                emotionButton = new JButton("Visualizza voti emozioni brani");
+                emotionButton.addActionListener(this);
+                c.gridx = 2;
+                c.gridy = 1;
+                c.anchor = GridBagConstraints.CENTER;
+
+                emotionButton.setBackground(new Color(70, 80, 120));
+                emotionButton.setForeground(Color.WHITE);
+                buttonPanel.add(emotionButton, c);
+
+
 
                 logoutButton = new JButton("Logout");
 
@@ -1747,6 +1763,414 @@ public class GUI implements ActionListener {
                 frame.repaint();
 
             }
+        }else if(e.getSource()==emotionButton) {
+
+            //qua bisognerà fare la ricerca della canzone di cui si vuole visualizzare l'emozione
+            //poi selezionarla e verranno mostrate le emozioni con le medie dei voti di tutti gli user
+/*
+            tablePanel = new JPanel();
+            tablePanel.setBackground(new Color(32, 33, 35));
+            String[] col = {"titolo", ""};
+            String titolo = Titlefield.getText();
+
+            try {
+                table = new JTable(cercaBranoMusicale(titolo, databaseInterface.getInstance()), col);
+                TableColumn column = table.getColumnModel().getColumn(1);        //get the TableColumn object for the desired column index
+                column.setMinWidth(0);                                                      // set the minimum width of the column to zero
+                column.setMaxWidth(0);                                                      // set the maximum width of the column to zero
+                //Listener per quando si schiaccia su una riga della tabella
+
+
+                table.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 1) { // detect a single click
+                            JTable target = (JTable) e.getSource(); // get the JTable object that triggered the event
+                            int row = target.getSelectedRow(); // get the selected row index
+                            String value = (String) target.getValueAt(row, 1); // get the value of the second column in the selected row
+                            canzoneDaValutare = value;
+
+
+                        }
+                    }
+                });
+
+                table.setBackground(new Color(32, 33, 35));
+                table.setForeground(new Color(255, 255, 255));
+                table.setDefaultEditor(Object.class, null);
+                //Disabilita la modifica delle celle con doppio clic
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.getViewport().setForeground(Color.white);
+            scrollPane.getViewport().setBackground(Color.BLACK);
+
+            indietro = new JButton("Indietro");
+            indietro.setForeground(new Color(255, 255, 255));
+            indietro.setBackground(new Color(70, 80, 120));
+            indietro.addActionListener(this);
+
+            avantiRating = new JButton("Avanti");
+            avantiRating.setForeground(new Color(255, 255, 255));
+            avantiRating.setBackground(new Color(70, 80, 120));
+            avantiRating.addActionListener(this);
+
+
+            tablePanel.add(scrollPane);
+            tablePanel.add(indietro);
+            tablePanel.add(avantiRating);
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+
+            table.getModel().addTableModelListener(new TableModelListener() {
+                /**
+                 * @param e a {@code TableModelEvent} to notify listener that a table model
+                 *          has changed
+                 */
+        /*          public void tableChanged(TableModelEvent e) {
+                    int row = table.getSelectedRow();
+                    int col = table.getSelectedColumn();
+                    System.out.println(row + " " + col);
+                }
+            });
+*/
+/////////////////////
+            searchPanel = new JPanel(new GridBagLayout());
+            searchPanel.setForeground(new Color(255, 255, 255));
+            searchPanel.setBackground(new Color(32, 33, 35));
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+
+            searchLabel = new JLabel("Cerca il brano di cui vuoi vedere i voti");
+            searchLabel.setForeground(Color.WHITE);
+            searchLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            searchPanel.add(searchLabel, gbc);
+
+            //Creazione di label e field per la ricerca
+            titleLabel = new JLabel("Titolo:");
+            gbc.gridwidth = 1;
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            titleLabel.setForeground(new Color(255, 255, 255));
+            searchPanel.add(titleLabel, gbc);
+
+
+            Titlefield = new JTextField(20);
+            Titlefield.setCaretColor(Color.WHITE);
+            gbc.gridx = 1;
+            gbc.gridy = 1;
+            Titlefield.setForeground(new Color(255, 255, 255));
+            Titlefield.setBackground(new Color(32, 33, 35));
+            searchPanel.add(Titlefield, gbc);
+
+            //Ricerca per titolo
+            searchTitoloEmozioni = new JButton("Cerca per titolo");
+            gbc.gridx = 1;
+            gbc.gridy = 5;
+            searchTitoloEmozioni.addActionListener(this);
+            searchTitoloEmozioni.setForeground(new Color(255, 255, 255));
+            searchTitoloEmozioni.setBackground(new Color(70, 80, 120));
+            searchPanel.add(searchTitoloEmozioni, gbc);
+
+            indietro = new JButton("Indietro");
+            gbc.gridx = 0;
+            gbc.gridy = 4;
+            gbc.gridwidth = 1;
+            indietro.addActionListener(this);
+            indietro.setForeground(new Color(255, 255, 255));
+            indietro.setBackground(new Color(70, 80, 120));
+            searchPanel.add(indietro, gbc);
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(searchPanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+
+        }else if(e.getSource()==searchTitoloEmozioni){
+
+            tablePanel = new JPanel();
+            tablePanel.setBackground(new Color(32, 33, 35));
+            String[] col = {"titolo",""};
+            String titolo = Titlefield.getText();
+
+            try{
+                table = new JTable(cercaBranoMusicale(titolo, databaseInterface.getInstance()),col);
+                TableColumn column = table.getColumnModel().getColumn(1);        //get the TableColumn object for the desired column index
+                column.setMinWidth(0);                                                      // set the minimum width of the column to zero
+                column.setMaxWidth(0);                                                      // set the maximum width of the column to zero
+                ArrayList<String> canzoniPlaylist = new ArrayList<>();
+
+                table.setBackground(new Color(32, 33, 35));
+                table.setForeground(new Color(255, 255, 255));
+                table.setDefaultEditor(Object.class, null);                             //Disabilita la modifica delle celle con doppio clic
+            }catch(SQLException ex){
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.getViewport().setForeground(Color.white);
+            scrollPane.getViewport().setBackground(Color.BLACK);
+
+            indietro = new JButton("Indietro");
+            indietro.setForeground(new Color(255, 255, 255));
+            indietro.setBackground(new Color(70, 80, 120));
+            indietro.addActionListener(this);
+
+            confermaEmozioni = new JButton("Conferma");
+            confermaEmozioni.setForeground(new Color(255, 255, 255));
+            confermaEmozioni.setBackground(new Color(70, 80, 120));
+            confermaEmozioni.addActionListener(this);
+
+            tablePanel.add(scrollPane);
+            tablePanel.add(indietro);
+            tablePanel.add(confermaEmozioni);
+
+            frame.getContentPane().removeAll();
+            frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
+            frame.revalidate();
+            frame.repaint();
+
+          /*  table.getModel().addTableModelListener(new TableModelListener() {
+                /**
+                 *
+                 * @param e a {@code TableModelEvent} to notify listener that a table model
+                 *          has changed
+
+                public void tableChanged(TableModelEvent e){
+                    int row = table.getSelectedRow();
+                    int col = table.getSelectedColumn();
+                    System.out.println(row + " " + col);
+                }
+            });*/
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if (!e.getValueIsAdjusting()) {
+                        int selectedRow = table.getSelectedRow();
+
+                        if (selectedRow >= 0) {
+                            String selectedValue = (String) table.getValueAt(selectedRow, 1);
+                            branoEmozione = selectedValue;
+                        }
+                    }
+                }
+            });
+
+        }else if(e.getSource()==confermaEmozioni){
+            //qua si cercano tutti i voti della canzone contenuta in branoEmozione e si ottengono e mostrano i dati
+            String q = "select emozione,voto from emozioni where codcanz='"+branoEmozione+"'";
+            Query query=new Query(q);
+
+            JPanel panel = new JPanel();
+            panel.setForeground(new Color(255, 255, 255));
+            panel.setBackground(new Color(32, 33, 35));
+
+            JLabel l1=new JLabel("Amazement");
+            l1.setForeground(new Color(255, 255, 255));
+            JLabel l2=new JLabel("Solemnity");
+            l2.setForeground(new Color(255, 255, 255));
+            JLabel l3=new JLabel("Tenderness");
+            l3.setForeground(new Color(255, 255, 255));
+            JLabel l4=new JLabel("Nostalgia");
+            l4.setForeground(new Color(255, 255, 255));
+            JLabel l5=new JLabel("Calmness");
+            l5.setForeground(new Color(255, 255, 255));
+            JLabel l6=new JLabel("Power");
+            l6.setForeground(new Color(255, 255, 255));
+            JLabel l7=new JLabel("Joy");
+            l7.setForeground(new Color(255, 255, 255));
+            JLabel l8=new JLabel("Tension");
+            l8.setForeground(new Color(255, 255, 255));
+            JLabel l9=new JLabel("Sadness");
+            l9.setForeground(new Color(255, 255, 255));
+
+            JTextField t1=new JTextField(5);
+            t1.setBackground(new Color(32, 33, 35));
+            JTextField t2=new JTextField(5);
+            t2.setBackground(new Color(32, 33, 35));
+            JTextField t3=new JTextField(5);
+            t3.setBackground(new Color(32, 33, 35));
+            JTextField t4=new JTextField(5);
+            t4.setBackground(new Color(32, 33, 35));
+            JTextField t5=new JTextField(5);
+            t5.setBackground(new Color(32, 33, 35));
+            JTextField t6=new JTextField(5);
+            t6.setBackground(new Color(32, 33, 35));
+            JTextField t7=new JTextField(5);
+            t7.setBackground(new Color(32, 33, 35));
+            JTextField t8=new JTextField(5);
+            t8.setBackground(new Color(32, 33, 35));
+            JTextField t9=new JTextField(5);
+            t9.setBackground(new Color(32, 33, 35));
+
+            t1.setEnabled(false);
+            t2.setEnabled(false);
+            t3.setEnabled(false);
+            t4.setEnabled(false);
+            t5.setEnabled(false);
+            t6.setEnabled(false);
+            t7.setEnabled(false);
+            t8.setEnabled(false);
+            t9.setEnabled(false);
+            //somma valori dei voti
+            Double v1=0.0;
+            Double v2=0.0;
+            Double v3=0.0;
+            Double v4=0.0;
+            Double v5=0.0;
+            Double v6=0.0;
+            Double v7=0.0;
+            Double v8=0.0;
+            Double v9=0.0;
+            //numero utenti di un emozione
+            int i1=0;
+            int i2=0;
+            int i3=0;
+            int i4=0;
+            int i5=0;
+            int i6=0;
+            int i7=0;
+            int i8=0;
+            int i9=0;
+            //calcolo tra i due precedenti
+            Double d1;
+            Double d2;
+            Double d3;
+            Double d4;
+            Double d5;
+            Double d6;
+            Double d7;
+            Double d8;
+            Double d9;
+
+            String x;
+
+            try {
+                ArrayList<String> arrayList=databaseInterface.QueryCercaVoti(query);
+                System.out.println("ok");
+
+                for(int i=0; i<arrayList.size(); i++){
+                    System.out.println(arrayList.get(i));
+                    switch (arrayList.get(i)){
+                        case "Amazement":
+                            x=arrayList.get(i+1);
+                            i1++;
+                            v1=v1+Double.parseDouble(x);
+                            return;
+                        case "Solemnity":
+                            x=arrayList.get(i+1);
+                            i2++;
+                            v2=v2+Double.parseDouble(x);
+                            return;
+                        case "Tenderness":
+                            x=arrayList.get(i+1);
+                            i3++;
+                            v3=v3+Double.parseDouble(x);
+                            return;
+                        case "Nostalgia":
+                            x=arrayList.get(i+1);
+                            i4++;
+                            v4=v4+Double.parseDouble(x);
+                           // return;
+                        case "Calmness":
+                            x=arrayList.get(i+1);
+                            i5++;
+                            v5=v5+Double.parseDouble(x);
+                            return;
+                        case "Power":
+                            x=arrayList.get(i+1);
+                            i6++;
+                            v6=v6+Double.parseDouble(x);
+                            return;
+                        case "Joy":
+                            x=arrayList.get(i+1);
+                            i7++;
+                            v7=v7+Double.parseDouble(x);
+                            return;
+                        case "Tension":
+                            x=arrayList.get(i+1);
+                            i8++;
+                            v8=v8+Double.parseDouble(x);
+                            return;
+                        case "Sadness":
+                            x=arrayList.get(i+1);
+                            i9++;
+                            v9=v9+Double.parseDouble(x);
+                            return;
+
+                    }
+
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }finally {
+                branoEmozione=null;
+
+                //fare calcolo tra int e double e mostrarlo nei text
+
+                d1 = v1 / i1;
+                d2 = v2 / i2;
+                d3 = v3 / i3;
+                d4 = v4 / i4;
+                d5 = v5 / i5;
+                d6 = v6 / i6;
+                d7 = v7 / i7;
+                d8 = v8 / i8;
+                d9 = v9 / i9;
+                System.out.println("ok");
+
+                t1.setText(d1.toString());
+                t2.setText(d2.toString());
+                t3.setText(d3.toString());
+                t4.setText(d4.toString());
+                t5.setText(d5.toString());
+                t6.setText(d6.toString());
+                t7.setText(d7.toString());
+                t8.setText(d8.toString());
+                t9.setText(d9.toString());
+
+
+                System.out.println("ok");
+
+
+                panel.add(l1);
+                panel.add(t1);
+                panel.add(l2);
+                panel.add(t2);
+                panel.add(l3);
+                panel.add(t3);
+                panel.add(l4);
+                panel.add(t4);
+                panel.add(l5);
+                panel.add(t5);
+                panel.add(l6);
+                panel.add(t6);
+                panel.add(l7);
+                panel.add(t7);
+                panel.add(l8);
+                panel.add(t8);
+                panel.add(l9);
+                panel.add(t9);
+                System.out.println("ok");
+
+                frame.getContentPane().removeAll();
+                frame.getContentPane().add(panel, BorderLayout.CENTER);
+                frame.revalidate();
+                frame.repaint();
+            }
+
+
         }
     }
 

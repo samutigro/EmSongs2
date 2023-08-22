@@ -185,6 +185,20 @@ public class serverES extends UnicastRemoteObject implements InterfacciaDatabase
         stm.executeUpdate(query.getQuery());
     }
 
+   public ArrayList<String>  QueryCercaVoti (Query query) throws SQLException, RemoteException{
+       Statement stm = db.getStatement();
+       ResultSet rs = stm.executeQuery(query.getQuery());
+       ArrayList<String> arrayList = new ArrayList<>();
+       while(rs.next()){
+           String ris1 = rs.getString(1);
+           String ris2 = rs.getString(2);
+           arrayList.add(ris1);
+           arrayList.add(ris2);
+       }
+       return arrayList;
+    }
+
+
 
 
 }
