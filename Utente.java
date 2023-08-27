@@ -1,11 +1,16 @@
-package emotionalsongs;
+package EmotionalSongs;/*
+Cermisoni Marco, MATRICOLA 748739, VA
+Oldani Marco, MATRICOLA 748243, VA
+De Vito Francesco, MATRICOLA 749044, VA
+Auteri Samuele, MATRICOLA 749710, VA
+*/
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.sql.Date;
 
 public class Utente implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-
     private final String nome;
     private final String cognome;
     private final String codiceFiscale;
@@ -13,6 +18,7 @@ public class Utente implements Serializable {
     private String email;
     private String id;
     private String password;
+
     public String getNome() {
         return nome;
     }
@@ -41,8 +47,6 @@ public class Utente implements Serializable {
         return password;
     }
 
-
-
     public Utente(String nome, String cognome, String codiceFiscale, String data, String email, String id, String password) {
         this.nome = nome;
         this.cognome = cognome;
@@ -52,6 +56,4 @@ public class Utente implements Serializable {
         this.id = id;
         this.password = password;
     }
-
-
 }

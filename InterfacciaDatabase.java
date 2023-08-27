@@ -1,29 +1,26 @@
-package database;
+package Database;/*
+Cermisoni Marco, MATRICOLA 748739, VA
+Oldani Marco, MATRICOLA 748243, VA
+De Vito Francesco, MATRICOLA 749044, VA
+Auteri Samuele, MATRICOLA 749710, VA
+*/
 
-import database.Database;
-import emotionalsongs.JListUtility;
-import emotionalsongs.Registrazione;
-import emotionalsongs.Utente;
+import Database.Database;
+import EmotionalSongs.Utente;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public interface InterfacciaDatabase extends Remote{
-    public Database getInstance() throws SQLException, RemoteException;
-    public Statement getStatement() throws RemoteException;
-    public Connection getConnection() throws RemoteException;
+    Database getInstance() throws SQLException, RemoteException;
 
     void Registrazione(Utente user) throws RemoteException,SQLException;
 
-      Boolean Login(String username, String password) throws SQLException, RemoteException;
+    Boolean Login(String username, String password) throws SQLException, RemoteException;
 
-      Utente QueryLogin(Query query) throws SQLException, RemoteException;
-
-    ArrayList<String> QueryNomiPlaylist(Query query) throws SQLException, RemoteException;
+    Utente QueryLogin(Query query) throws SQLException, RemoteException;
 
     String[][] cercaBranoMusicaleTitolo(Query query) throws SQLException, RemoteException;
 
@@ -31,12 +28,11 @@ public interface InterfacciaDatabase extends Remote{
 
     String[][] cercaBranoMusicaleAutAnno(Query query) throws SQLException, RemoteException;
 
-    void RegistraPlaylist(emotionalsongs.Playlist playlist) throws SQLException, RemoteException;
+    void RegistraPlaylist(EmotionalSongs.Playlist playlist) throws SQLException, RemoteException;
 
     ArrayList<String> QueryRicercaCanzoniGiaInPlaylist(Query query) throws SQLException, RemoteException;
 
     void RegistraVotoEmozione(Query query) throws SQLException, RemoteException;
 
     ArrayList<String>  QueryCercaVoti (Query query) throws SQLException, RemoteException;
-
 }

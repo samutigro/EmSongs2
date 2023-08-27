@@ -1,13 +1,11 @@
-package emotionalsongs;/*
+package EmotionalSongs;/*
 Cermisoni Marco, MATRICOLA 748739, VA
 Oldani Marco, MATRICOLA 748243, VA
 De Vito Francesco, MATRICOLA 749044, VA
 Auteri Samuele, MATRICOLA 749710, VA
 */
 
-//Package della classe
-
-//Importazione della libreria esterna
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,35 +16,22 @@ import java.util.HashSet;
  * @author
  */
 public class Playlist implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-
     private ArrayList<String> canzoni;
     private Utente autore;
     private String nome;
     public int lunghezza;
 
     /**
-     * Costruttore della classe emotionalsongs.Playlist avente due parametri
+     * Costruttore della classe emotionalsongs.EmotionalSongs.Playlist avente due parametri
      * @param nomePlaylist Parametro di tipo String che esprime il nome della playlist
-     * @param utente Parametro di tipo Utente che esprime il nome dell'autore della playlist
+     * @param utente Parametro di tipo EmotionalSongs.Utente che esprime il nome dell'autore della playlist
      */
     public Playlist(String nomePlaylist, Utente utente){
         this.nome = nomePlaylist;
         this.autore = utente;
         this.lunghezza = 0;
-    }
-
-    /**
-     * Costruttore della classe emotionalsongs.Playlist avente tre parametri
-     * @param nomePlaylist Parametro di tipo String che esprime il nome della playlist
-     * @param utente Parametro di tipo Utente che esprime il nome dell'autore della playlist
-     * @param canzoni Parametro di tipo ArrayList di stringhe rappresentante le canzoni della playlist
-     */
-    public Playlist(String nomePlaylist, Utente utente, ArrayList<String> canzoni){
-        this.nome = nomePlaylist;
-        this.autore = utente;
-        this.canzoni = canzoni;
-        this.lunghezza = canzoni.toArray().length;
     }
 
     /**
@@ -71,7 +56,7 @@ public class Playlist implements Serializable {
 
     /**
      * Metodo che restituisce il nome dell'autore della playlist
-     * @return Il metodo ritorna il nome dell'autore della playlist di tipo Utente
+     * @return Il metodo ritorna il nome dell'autore della playlist di tipo EmotionalSongs.Utente
      */
     public Utente getAutore(){
         return this.autore;
@@ -94,9 +79,7 @@ public class Playlist implements Serializable {
 
     public static ArrayList<String> rimuoviDuplicati(ArrayList<String> secondaLista, ArrayList<String> primaLista) {
         ArrayList<String> risultato = new ArrayList<>(secondaLista);
-
         risultato.removeAll(primaLista);
-
         return risultato;
     }
 }
