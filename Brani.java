@@ -15,6 +15,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Brani {
     static Registry registry;
@@ -76,5 +79,25 @@ public class Brani {
 
     public static void registraPlaylist(Playlist playlist) throws SQLException, RemoteException {
         databaseInterface.RegistraPlaylist(playlist);
+    }
+
+    public static String convertDateFormat(String inputDateStr) {
+        String outputDateStr = null;
+        try {
+            // Definisce il formato di input
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            // Parsa la data di input
+            Date inputDate =  inputDateFormat.parse(inputDateStr);
+
+            // Definisce il formato di output
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            // Formatta la data nel nuovo formato
+            outputDateStr = outputDateFormat.format(inputDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return outputDateStr;
     }
 }

@@ -12,6 +12,7 @@ import static EmotionalSongs.Brani.*;
 import static EmotionalSongs.Playlist.rimuoviDuplicati;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -170,7 +171,7 @@ public class clientEs implements ActionListener {
 
             codiceFiscale = new JLabel("Codice Fiscale:");
 
-            dateLabel = new JLabel("Data nascita (YYYY-MM-DD):");
+            dateLabel = new JLabel("Data nascita (DD/MM//YYYY):");
 
             emailLabel = new JLabel("Email:");
 
@@ -321,7 +322,7 @@ public class clientEs implements ActionListener {
             String name = nameTextField.getText();
             String surname = surnameTextField.getText();
             String codiceFiscale = CFfield.getText();
-            String date = dateField.getText();
+            String date = convertDateFormat(dateField.getText());
             String email = emailField.getText();
             String username = usernameField.getText();
             String password = String.valueOf(passwordField.getPassword());
@@ -437,6 +438,7 @@ public class clientEs implements ActionListener {
 
                 buttonPanel.remove(registrationButton);
                 buttonPanel.remove(loginButton);
+                buttonPanel.remove(searchButton);
 
                 GridBagConstraints c = new GridBagConstraints();
                 c.insets = new Insets(10, 10, 10, 10); //Aggiunge margine tra i pulsanti
@@ -465,7 +467,7 @@ public class clientEs implements ActionListener {
                 emotionButton = new JButton("Visualizza voti emozioni brani");
                 emotionButton.addActionListener(this);
                 c.gridx = 2;
-                c.gridy = 1;
+                c.gridy = 0;
                 c.anchor = GridBagConstraints.CENTER;
 
                 emotionButton.setBackground(new Color(70, 80, 120));
@@ -628,7 +630,7 @@ public class clientEs implements ActionListener {
             //Ricerca per titolo
             searchTitoloRating = new JButton("Cerca per titolo");
             gbc.gridx = 1;
-            gbc.gridy = 5;
+            gbc.gridy = 4;
             searchTitoloRating.addActionListener(this);
             searchTitoloRating.setForeground(new Color(255, 255, 255));
             searchTitoloRating.setBackground(new Color(70, 80, 120));
@@ -873,10 +875,15 @@ public class clientEs implements ActionListener {
 
             contatoreCanzoniSelezionate = 0;
 
+            JLabel label = new JLabel("brani selezionati: ");
+            label.setForeground(new Color(255, 255, 255));
+            label.setBackground(new Color(70, 80, 120));
+
             contatore = new JTextField(Integer.toString(contatoreCanzoniSelezionate), 10);
             contatore.setEnabled(false);
             contatore.setForeground(new Color(255, 255, 255));
             contatore.setBackground(new Color(70, 80, 120));
+            contatore.setCaretColor(new Color(255, 255, 255));
 
 
             indietro = new JButton("Indietro");
@@ -890,6 +897,7 @@ public class clientEs implements ActionListener {
             confermaPlaylist.addActionListener(this);
 
             tablePanel.add(scrollPane);
+            tablePanel.add(label);
             tablePanel.add(contatore);
             tablePanel.add(confermaPlaylist);
             tablePanel.add(indietro);
@@ -901,6 +909,8 @@ public class clientEs implements ActionListener {
 
 
         }else if (e.getSource() == confermaPlaylist){
+            JOptionPane.showMessageDialog(frame,"Playlist creata!");
+
             contatoreCanzoniSelezionate=0;
             contatore = null;
             try {
@@ -1224,6 +1234,7 @@ public class clientEs implements ActionListener {
                             int row = target.getSelectedRow();
                             String value = (String) target.getValueAt(row, 1);
                             canzoneDaValutare = value;
+                            avantiRating.setEnabled(true);
                         }
                     }
                 });
@@ -1250,6 +1261,7 @@ public class clientEs implements ActionListener {
             avantiRating.setForeground(new Color(255, 255, 255));
             avantiRating.setBackground(new Color(70, 80, 120));
             avantiRating.addActionListener(this);
+            avantiRating.setEnabled(false);
 
 
             tablePanel.add(scrollPane);
@@ -1319,6 +1331,7 @@ public class clientEs implements ActionListener {
             frame.repaint();
 
         }else if (e.getSource() == confermaRating){
+            Boolean flag=true;
             String voto = textRating.getText();
             String emozione = emozioneRating;
             emozioneRating=null;
@@ -1327,18 +1340,33 @@ public class clientEs implements ActionListener {
             String cf = utenteLoggato.getCodiceFiscale();
             String q = "insert into emozioni(codcanz,emozione,voto,codf) values ('"+brano+"','"+emozione+"','"+voto+"','"+cf+"')";
             Query query = new Query(q);
-            try {
-                registraVotoEmozione(query);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+            if(Double.parseDouble(voto) <= 5){
+                try {
+                    registraVotoEmozione(query);
+                } catch (org.postgresql.util.PSQLException ex){
+                    JOptionPane.showMessageDialog(frame,"Errore, hai già dato un voto a questo brano relativo a questa emozione!");
+                     flag=false;
+                    frame.getContentPane().removeAll();
+                    frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+                    frame.revalidate();
+                    frame.repaint();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if(flag==true){
+                    JOptionPane.showMessageDialog(frame,"valutazione inserita!");
+                    frame.getContentPane().removeAll();
+                    frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+                    frame.revalidate();
+                    frame.repaint();
+                }
+
+            }else{
+                JOptionPane.showMessageDialog(frame,"errore, il voto deve essere compreso tra 1 e 5!");
             }
-            JOptionPane.showMessageDialog(frame,"valutazione inserita!");
-            frame.getContentPane().removeAll();
-            frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-            frame.revalidate();
-            frame.repaint();
+
 
         }else if (e.getSource() == viewPlaylistButton){
 
@@ -1358,6 +1386,8 @@ public class clientEs implements ActionListener {
             }
 
             bottoneLista = new JButton("conferma");
+            bottoneLista.setForeground(new Color(255, 255, 255));
+            bottoneLista.setBackground(new Color(70, 80, 120));
             bottoneLista.addActionListener(this);
 
             lista.add(bottoneLista);
@@ -1397,6 +1427,8 @@ public class clientEs implements ActionListener {
 
 
             indietro=new JButton("Indietro");
+            indietro.setForeground(new Color(255, 255, 255));
+            indietro.setBackground(new Color(70, 80, 120));
             indietro.addActionListener(this);
             lista.add(indietro);
             frame.getContentPane().removeAll();
@@ -1726,7 +1758,7 @@ public class clientEs implements ActionListener {
             //Ricerca per titolo
             searchTitoloEmozioni = new JButton("Cerca per titolo");
             gbc.gridx = 1;
-            gbc.gridy = 5;
+            gbc.gridy = 4;
             searchTitoloEmozioni.addActionListener(this);
             searchTitoloEmozioni.setForeground(new Color(255, 255, 255));
             searchTitoloEmozioni.setBackground(new Color(70, 80, 120));
@@ -1777,6 +1809,7 @@ public class clientEs implements ActionListener {
             indietro.addActionListener(this);
 
             confermaEmozioni = new JButton("Conferma");
+            confermaEmozioni.setEnabled(false);
             confermaEmozioni.setForeground(new Color(255, 255, 255));
             confermaEmozioni.setBackground(new Color(70, 80, 120));
             confermaEmozioni.addActionListener(this);
@@ -1800,6 +1833,7 @@ public class clientEs implements ActionListener {
                         if (selectedRow >= 0) {
                             String selectedValue = (String) table.getValueAt(selectedRow, 1);
                             branoEmozione = selectedValue;
+                            confermaEmozioni.setEnabled(true);
                         }
                     }
                 }
@@ -1813,6 +1847,7 @@ public class clientEs implements ActionListener {
             JPanel panel = new JPanel();
             panel.setForeground(new Color(255, 255, 255));
             panel.setBackground(new Color(32, 33, 35));
+
 
             JLabel l1=new JLabel("Amazement");
             l1.setForeground(new Color(255, 255, 255));
@@ -1897,59 +1932,69 @@ public class clientEs implements ActionListener {
             try {
                 ArrayList<String> arrayList=databaseInterface.QueryCercaVoti(query);
 
-
                 for(int i=0; i<arrayList.size(); i++){
 
-                    switch (arrayList.get(i)){
-                        case "Amazement":
-                            x=arrayList.get(i+1);
-                            i1++;
-                            v1=v1+Double.parseDouble(x);
-                            return;
-                        case "Solemnity":
-                            x=arrayList.get(i+1);
-                            i2++;
-                            v2=v2+Double.parseDouble(x);
-                            return;
-                        case "Tenderness":
-                            x=arrayList.get(i+1);
-                            i3++;
-                            v3=v3+Double.parseDouble(x);
-                            return;
-                        case "Nostalgia":
-                            x=arrayList.get(i+1);
-                            i4++;
-                            v4=v4+Double.parseDouble(x);
-                            // return;
-                        case "Calmness":
-                            x=arrayList.get(i+1);
-                            i5++;
-                            v5=v5+Double.parseDouble(x);
-                            return;
-                        case "Power":
-                            x=arrayList.get(i+1);
-                            i6++;
-                            v6=v6+Double.parseDouble(x);
-                            return;
-                        case "Joy":
-                            x=arrayList.get(i+1);
-                            i7++;
-                            v7=v7+Double.parseDouble(x);
-                            return;
-                        case "Tension":
-                            x=arrayList.get(i+1);
-                            i8++;
-                            v8=v8+Double.parseDouble(x);
-                            return;
-                        case "Sadness":
-                            x=arrayList.get(i+1);
-                            i9++;
-                            v9=v9+Double.parseDouble(x);
-                            return;
+                    if (arrayList.get(i).equals("Amazement")) {
 
+                        x = arrayList.get(i + 1);
+                        i1++;
+                        v1 = v1 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Solemnity")) {
+
+                        System.out.println("sono qua");
+                        x = arrayList.get(i + 1);
+                        i2++;
+                        v2 = v2 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Tenderness")) {
+                        x = arrayList.get(i + 1);
+                        i3++;
+                        v3 = v3 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Nostalgia")) {
+                        x = arrayList.get(i + 1);
+                        i4++;
+                        v4 = v4 + Double.parseDouble(x);
+                        // return;
+                    }
+                    if(arrayList.get(i).equals("Calmness")) {
+                        x = arrayList.get(i + 1);
+                        i5++;
+                        v5 = v5 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Power")) {
+                        x = arrayList.get(i + 1);
+                        i6++;
+                        v6 = v6 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Joy")) {
+                        x = arrayList.get(i + 1);
+                        i7++;
+                        v7 = v7 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Tension")) {
+                        x = arrayList.get(i + 1);
+                        i8++;
+                        v8 = v8 + Double.parseDouble(x);
+                        //return;
+                    }
+                    if(arrayList.get(i).equals("Sadness")) {
+                            x = arrayList.get(i + 1);
+                            i9++;
+                            v9 = v9 + Double.parseDouble(x);
+                            // return;
                     }
 
                 }
+
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             } catch (RemoteException ex) {
@@ -1969,20 +2014,74 @@ public class clientEs implements ActionListener {
                 d8 = v8 / i8;
                 d9 = v9 / i9;
 
+                //assegnamento voti ai textfield
+                if(d1.toString().equals("NaN")){
+                    t1.setText("");
+                }else{
+                    t1.setText(d1.toString());
+                }
 
-                t1.setText(d1.toString());
-                t2.setText(d2.toString());
-                t3.setText(d3.toString());
-                t4.setText(d4.toString());
-                t5.setText(d5.toString());
-                t6.setText(d6.toString());
-                t7.setText(d7.toString());
-                t8.setText(d8.toString());
-                t9.setText(d9.toString());
+                if(d2.toString().equals("NaN")){
+                    t2.setText("");
+                }else{
+                    t2.setText(d2.toString());
+                }
+
+                if(d3.toString().equals("NaN")){
+                    t3.setText("");
+                }else{
+                    t3.setText(d3.toString());
+                }
+
+                if(d4.toString().equals("NaN")){
+                    t4.setText("");
+                }else{
+                    t4.setText(d4.toString());
+                }
+
+                if(d5.toString().equals("NaN")){
+                    t5.setText("");
+                }else{
+                    t5.setText(d5.toString());
+                }
+
+                if(d6.toString().equals("NaN")){
+                    t6.setText("");
+                }else{
+                    t6.setText(d6.toString());
+                }
+
+                if(d7.toString().equals("NaN")){
+                    t7.setText("");
+                }else{
+                    t7.setText(d7.toString());
+                }
+
+                if(d8.toString().equals("NaN")){
+                    t8.setText("");
+                }else{
+                    t8.setText(d8.toString());
+                }
+
+                if(d9.toString().equals("NaN")){
+                    t9.setText("");
+                }else{
+                    t9.setText(d9.toString());
+                }
 
 
-
-
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                //definisco la larghezza massima dei textfield
+                t1.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t2.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t3.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t4.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t5.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t6.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t7.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t8.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                t9.setMaximumSize(new Dimension(200, t1.getPreferredSize().height));
+                //aggiunte al panel
 
                 panel.add(l1);
                 panel.add(t1);
@@ -2002,6 +2101,13 @@ public class clientEs implements ActionListener {
                 panel.add(t8);
                 panel.add(l9);
                 panel.add(t9);
+                panel.add(Box.createHorizontalStrut(530));
+                panel.add(Box.createVerticalStrut(10));
+                indietro = new JButton("indietro");
+                indietro.addActionListener(this);
+                panel.add(indietro);
+                indietro.setForeground(new Color(255, 255, 255));
+                indietro.setBackground(new Color(70, 80, 120));
 
 
                 frame.getContentPane().removeAll();
